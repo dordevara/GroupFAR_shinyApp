@@ -61,7 +61,7 @@ server <- function(input, output, session) {
     testset = dataset[-indexes,] 
     myTrainset <<- trainset 
     myTestset <<- testset 
-    actual <- testset[,1] # changed from testset$X1
+    actual <<- testset[,1] # changed from testset$X1
     actual 
     mytype = input$type_radio 
     mymodel = input$model_radio 
@@ -143,8 +143,8 @@ server <- function(input, output, session) {
                         myactualVpred <<- data.frame(actual, lr_pred) 
                         print(summary(lr_model)) 
                         
-                        confusion_matrix <- confusionMatrix(lr_pred, testset) 
-                        print(confusion_matrix)
+                        #confusion_matrix <- confusionMatrix(lr_pred, testset) 
+                        #print(confusion_matrix)
                       }
                     },
                     "SVM"= { 
@@ -160,8 +160,8 @@ server <- function(input, output, session) {
                         myPrediction <<- svr_pred
                         myactualVpred <<- data.frame(actual, svr_pred) 
                         print(svr_model) 
-                        confusion_matrix <- confusionMatrix(svr_pred, actual) 
-                        print(confusion_matrix)
+                        #confusion_matrix <- confusionMatrix(svr_pred, actual) 
+                        #print(confusion_matrix)
                       }
                     }, 
                     "Decision Tree"= { 
@@ -176,8 +176,8 @@ server <- function(input, output, session) {
                         myPrediction <<- rpart_pred 
                         myactualVpred <<- data.frame(actual, rpart_pred) 
                         print(rpart_model) 
-                        confusion_matrix <- confusionMatrix(rpart_pred, actual) 
-                        print(confusion_matrix)                           
+                        #confusion_matrix <- confusionMatrix(rpart_pred, actual) 
+                        #print(confusion_matrix)                           
                       }
                     }, 
                     "Naive Bayes"= { 
@@ -191,17 +191,17 @@ server <- function(input, output, session) {
                         myPrediction <<- nb_pred 
                         myactualVpred <<-data.frame(actual, nb_pred) 
                         print(nb_model) 
-                        confusion_matrix <- confusionMatrix(nb_pred, actual) 
-                        print(confusion_matrix)
+                        #confusion_matrix <- confusionMatrix(nb_pred, actual) 
+                        #print(confusion_matrix)
                       }
                     })
            })
-  }) #----------------------------end of output modelling
+  }) #----------------------------end of output modeling
 
   #-------------------------------------------------------
   output$summaryTable <- DT::renderDataTable({ 
     tryCatch({
-      #---- add the details hire
+      #---- add the details here
       df <- myData() 
       dataset <- data.frame(cbind(df[,input$depvar],df[,input$indepvar]))
       dataset <- na.omit(dataset) 
@@ -257,7 +257,7 @@ server <- function(input, output, session) {
                  { 
                    #splitting into training and test sets 
                    n=nrow(dataset) 
-                   indexes = sample(n,n*(80/100)) 
+                   indexes = sample(n,n*(input$ratio/100)) 
                    trainset = dataset[indexes,] 
                    testset = dataset[-indexes,] 
                    actual <- testset[,1] 
@@ -279,7 +279,7 @@ server <- function(input, output, session) {
                    vectorRPART <- c(vectorRPART, vectorRPART[i])
                    #-------------Naive Bayes
                    nb_model <- naiveBayes(as.factor(trainset[,1]) ~ ., data = trainset) 
-                   nb_pred = predict(nb_model, testset)  
+                   nb_pred = predict(nb_model, testset[,-1], type='class')  
                    vectorNB[i] <- mean(nb_pred == actual) 
                    vectorNB <- c(vectorNB, vectorNB[i]) 
                  } 
@@ -383,8 +383,8 @@ server <- function(input, output, session) {
       data <- cbind(df[,input$depvar],df[,input$indepvar]) # here we need to make it work for more than one indep var
       vars = myVars() 
       colnames(data) = c(input$depvar, vars) 
-      #pairs(data)
-      chart.Correlation(data, histogram=TRUE, pch=19)
+      library(psych)
+      pairs.panels(data)
     },
     error = function(e){
       message("Waiting for input ")
