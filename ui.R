@@ -39,7 +39,7 @@ ui <- fluidPage(titlePanel("CA1 - Group: Roxana, Adrian, Florica"),
                   mainPanel(
                     
                     tabsetPanel(type = "tabs",
-                                tabPanel("Correlation Matrix", #tabName = "scatterplot", 
+                                tabPanel("Correlation Matrix",  
                                          h3("Correlation Matrix"),
                                          tryCatch({plotOutput("scatterplot")},
                                                   error = function(e){message("Waiting for input ")
@@ -52,14 +52,13 @@ ui <- fluidPage(titlePanel("CA1 - Group: Roxana, Adrian, Florica"),
                                               collapsible = FALSE, title="Model", valueBoxOutput("rmse")),
                                          
                                          box( collapsible = FALSE, 
-                                              title = "Average Accuracy",
+                                              title = "Average Accuracy / RMSE",
                                               status="primary",
                                               DT::dataTableOutput("summaryTable")),
                                          
                                          box( background = "olive", 
                                               collapsible = FALSE,
                                               title = "Model Summary",
-                                              #height = "300px", #need to add scroll here to avoid a long box
                                               tryCatch({verbatimTextOutput("modelling")},
                                                        error = function(e){
                                                          message("Waiting for modeling output ")
@@ -68,6 +67,7 @@ ui <- fluidPage(titlePanel("CA1 - Group: Roxana, Adrian, Florica"),
                                          )
                                          ),
                                 tabPanel("Actual vs Predicted", 
+                                         h3("Actual vs Predicted"),
                                          tabBox(
                                            title = "Actual vs Predicted",
                                            height = "500px",
